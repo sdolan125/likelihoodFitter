@@ -1,0 +1,47 @@
+Global:
+	Change v_pedges and v_cthedges to have more modular names (d1edges, d2edges)
+    datatype in fitter is not fit mode in main
+
+
+In ccqefit.cc:
+	dccqebin->binning
+	ccqepara->firpara
+
+    TTree *tdata = (TTree*)(fdata->Get("selectedEvents"));
+    This defines the name of the tree to look for in the data - for HL2 this should probz be all_syst (maybe default
+
+
+In inputs/CCQESample.hh
+
+
+In anaevents/CCQESample.cc
+    m_data_tree->SetBranchAddress("weight",&wght); 
+    m_data_tree->SetBranchAddress("Pmureco",&pmu_rec_tree);
+    m_data_tree->SetBranchAddress("CTHmureco",&cthmu_rec_tree);
+    m_data_tree->SetBranchAddress("topology",&topology);  
+    These set the branches to be used in the fit, need this to include whatever is relevent for hl2 input
+    POT is hardcoded
+
+    if(topology != m_sampleid) continue;
+    The ccode selects the sample based on the "topology" branch, in the hl2 case we would probz like to select the sample bases on the first index of accum_level[][]
+
+    Use rtype to decide event topology (code calls it reaction), this is analysis specific but will set up to work with the mectopology category.
+
+
+In include/ccqeTreeMC.hh 
+    const char *trname = "selectedEvents";
+    This should be default or all_syst
+
+
+In xsecfit/XsecFitter
+    Swap CCQESample to AnySample (remember includes in the header file!)
+    CHECK WHICH FILE HAS THE PROBLEM, IS IT CCQE_ORINAL !!!????????
+
+
+General: Code currently considers signal to be CCQE, i.e that reaction in the selectedEvents tree is 1. This should be made more modular
+
+
+In CCQEParameters
+        Specify ccqe_recode = 0; Not good
+
+

@@ -1,0 +1,106 @@
+//////////////////////////////////////////////////
+//
+// Simple example on how to use various classes
+//
+//////////////////////////////////////////////////
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <unistd.h>
+#include <fstream>
+#include <sstream>
+#include <assert.h>
+
+#include <vector>
+#include <string>
+
+#include "TH2F.h"
+
+#include "CCQESample.hh"
+#include "ccqeTreeMC.hh"
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+  string finname  = "CCQE_neut.root";
+  string foutname = "output.root";
+  string fccqebin = "../inputs/ccqebins.txt";
+
+  //get command line options
+  char cc;
+  while((cc = getopt(argc, argv, "i:o:b:")) != -1)
+    {
+      switch(cc)
+        {
+        case 'o':
+          foutname = optarg;
+	  break;
+        case 'i':
+          finname = optarg;
+          break;
+	case 'b': 
+	  fccqebin = optarg;
+	  break;
+	}
+    }
+
+  TFile *fdata = new TFile("fakeData.root"); //need to create from scratch since weights otherwise
+                                              //are not properly normalized
+   TTree *tdata = (TTree*)(fdata->Get("data"));
+
+  std::vector<std::pair<double, double> > v_pedges;
+   std::vector<std::pair<double, double> > v_cthedges;
+   ifstream fin(fccqebin.c_str());
+   assert(fin.is_open());
+   string line;
+   while (getline(fin, line))
+     {
+       stringstream ss(line);
+       double p1, p2, cth1, cth2;
+       if(!(ss>>cth1>>cth2>>p1>>p2))
+	 {
+	   cerr<<"Bad line format: "<<endl
+	       <<"     "<<line<<endl;
+	   continue;
+	 }
+       v_pedges.push_back(make_pair(p1,p2));
+       v_cthedges.push_back(make_pair(cth1,cth2));
+     }
+   fin.close();
+    vector<AnaSample*> samples;
+  CCQESample sam1(0, "MuTrack",v_pedges, v_cthedges,tdata);
+  samples.push_back(&sam1);
+  CCQESample sam2(1, "MuPtpc",v_pedges, v_cthedges,tdata);
+  samples.push_back(&sam2);
+  CCQESample sam3(2, "MuPfgd",v_pedges, v_cthedges,tdata);
+  samples.push_back(&sam3);
+  CCQESample sam4(3, "MufgdPtpc",v_pedges, v_cthedges,tdata);
+  samples.push_back(&sam4);
+  CCQESample sam5(4, "CC1pi",v_pedges, v_cthedges,tdata);
+  samples.push_back(&sam5);
+  CCQESample sam6(5, "DIS",v_pedges, v_cthedges,tdata);
+  samples.push_back(&sam6);
+  
+  ccqeTreeMC selTree(finname.c_str());
+
+  TFile *fout = TFile::Open(foutname.c_str(),"RECREATE");
+
+  //get events for different samples
+  selTree.GetEvents(samples);
+  
+  for(size_t i=0;i<samples.size();i++)
+    {
+      CCQESample *sam = dynamic_cast<CCQESample*>(samples[i]);
+      sam->GetSampleBreakdown(fout);
+      sam->FillEventHisto(false);
+      //TH2D *hev = sam->GetPredHisto();
+      TH1D *hev = sam->GetPredHisto();
+      fout->cd();
+      hev->Write();
+    }
+
+  fout->Close();
+  return 0;
+}
+  

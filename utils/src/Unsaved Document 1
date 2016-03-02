@@ -1,0 +1,176 @@
+No reg
+
+param 0 of class 0 has value 0.772373                                         
+param 1 of class 0 has value 1.2662                                           
+param 2 of class 0 has value 1.06162                                          
+param 3 of class 0 has value 1.13727                                          
+param 4 of class 0 has value 0.98209                                          
+param 5 of class 0 has value 1.25525                                          
+param 6 of class 0 has value 0.91762                                          
+param 7 of class 0 has value 1.15091                                          
+chi2_sys contribution from param set 0 is 0                                   
+m_calls is: 292                                                               
+Chi2 for this iter: 65.8967                          
+
+reg p1 = 10
+param 0 of class 0 has value 0.866017 giving total chi2_reg 0                 
+param 1 of class 0 has value 1.17739 giving total chi2_reg 3.11373            
+param 2 of class 0 has value 1.12013 giving total chi2_reg 3.68634            
+param 3 of class 0 has value 1.09844 giving total chi2_reg 3.90321            
+param 4 of class 0 has value 1.09844 giving total chi2_reg 3.90322            
+param 5 of class 0 has value 1.12367 giving total chi2_reg 4.15552            
+param 6 of class 0 has value 1.01016 giving total chi2_reg 5.2906             
+param 7 of class 0 has value 1.10111 giving total chi2_reg 6.20003            
+chi2_sys contribution from param set 0 is 0                                   
+chi2_sys contribution from regularisation 6.20003                             
+nfitpar is: 1                                                                 
+m_calls is: 1100                                                              
+Chi2 for this iter: 76.6014   
+
+reg_p1 = 20
+param 0 of class 0 has value 0.938585 giving total chi2_reg 0                                          
+param 1 of class 0 has value 1.12862 giving total chi2_reg 3.80066                                     
+param 2 of class 0 has value 1.12861 giving total chi2_reg 3.80071                                     
+param 3 of class 0 has value 1.10443 giving total chi2_reg 4.2845                                      
+param 4 of class 0 has value 1.10442 giving total chi2_reg 4.28454                                     
+param 5 of class 0 has value 1.10442 giving total chi2_reg 4.28454                                     
+param 6 of class 0 has value 1.06294 giving total chi2_reg 5.11424                                     
+param 7 of class 0 has value 1.06294 giving total chi2_reg 5.11431                                     
+chi2_sys contribution from param set 0 is 0                                                            
+chi2_sys contribution from regularisation 5.11431                                                      
+nfitpar is: 1                                                                                          
+m_calls is: 2840                                                                                       
+Chi2 for this iter: 80.439                
+
+
+
+New binning
+
+No reg
+
+param 0 of class 0 has value 0.60677 giving total chi2_reg 0                  
+param 1 of class 0 has value 1.88506 giving total chi2_reg 0                  
+param 2 of class 0 has value 0.810848 giving total chi2_reg 0                 
+param 3 of class 0 has value 0.877222 giving total chi2_reg 0                 
+param 4 of class 0 has value 1.42131 giving total chi2_reg 0                  
+param 5 of class 0 has value 0.973971 giving total chi2_reg 0                 
+param 6 of class 0 has value 1.01349 giving total chi2_reg 0                  
+param 7 of class 0 has value 1.32606 giving total chi2_reg 0                  
+param 8 of class 0 has value 0.837778 giving total chi2_reg 0                 
+param 9 of class 0 has value 1.16389 giving total chi2_reg 0                  
+chi2_sys contribution from param set 0 is 0                                   
+chi2_sys contribution from regularisation 0                                   
+nfitpar is: 1                                                                 
+m_calls is: 436                                                               
+Chi2 for this iter: 64.0321  
+
+
+reg_p1 = 10
+aram 0 of class 0 has value 0.833561 giving total chi2_reg 0                                                                  
+param 1 of class 0 has value 1.36251 giving total chi2_reg 5.28947                                                             
+param 2 of class 0 has value 1.09295 giving total chi2_reg 7.98506                                                             
+param 3 of class 0 has value 1.09291 giving total chi2_reg 7.98543                                                             
+param 4 of class 0 has value 1.0931 giving total chi2_reg 7.98732                                                              
+param 5 of class 0 has value 1.0931 giving total chi2_reg 7.98736                                                              
+param 6 of class 0 has value 1.09308 giving total chi2_reg 7.98749                                                             
+param 7 of class 0 has value 1.16327 giving total chi2_reg 8.68932                                                             
+param 8 of class 0 has value 0.944008 giving total chi2_reg 10.8819                                                            
+param 9 of class 0 has value 1.12563 giving total chi2_reg 12.6981                                                             
+chi2_sys contribution from param set 0 is 0                                                                                    
+chi2_sys contribution from regularisation 12.6981                                                                              
+nfitpar is: 1                                                                                                                  
+m_calls is: 1437                                                                                                               
+Chi2 for this iter: 88.5641
+
+reg_p1 = 100
+
+Chi2 for this iter: 98.48                                                                                                      
+param 0 of class 0 has value 1.09224 giving total chi2_reg 0                                                                   
+param 1 of class 0 has value 1.09222 giving total chi2_reg 0.00183515                                                          
+param 2 of class 0 has value 1.09221 giving total chi2_reg 0.00265401                                                          
+param 3 of class 0 has value 1.0922 giving total chi2_reg 0.00312396                                                           
+param 4 of class 0 has value 1.09209 giving total chi2_reg 0.0141888                                                           
+param 5 of class 0 has value 1.09193 giving total chi2_reg 0.0301934                                                           
+param 6 of class 0 has value 1.09075 giving total chi2_reg 0.148419                                                            
+param 7 of class 0 has value 1.09069 giving total chi2_reg 0.154827                                                            
+param 8 of class 0 has value 1.09021 giving total chi2_reg 0.202799                                                            
+param 9 of class 0 has value 1.09018 giving total chi2_reg 0.205312                                                            
+chi2_sys contribution from param set 0 is 0                                                                                    
+chi2_sys contribution from regularisation 0.205312                                                                             
+nfitpar is: 1                                                                                                                  
+m_calls is: 2037                                                                                                               
+Chi2 for this iter: 98.48  
+
+reg_p1 = 20
+
+param 0 of class 0 has value 0.970128 giving total chi2_reg 0                                                                  
+param 1 of class 0 has value 1.14216 giving total chi2_reg 3.44057                                                             
+param 2 of class 0 has value 1.14209 giving total chi2_reg 3.44184                                                             
+param 3 of class 0 has value 1.10556 giving total chi2_reg 4.17242                                                             
+param 4 of class 0 has value 1.10554 giving total chi2_reg 4.17283                                                             
+param 5 of class 0 has value 1.10554 giving total chi2_reg 4.17283                                                             
+param 6 of class 0 has value 1.10553 giving total chi2_reg 4.17302                                                             
+param 7 of class 0 has value 1.10553 giving total chi2_reg 4.17309                                                             
+param 8 of class 0 has value 1.01965 giving total chi2_reg 5.89079                                                             
+param 9 of class 0 has value 1.09214 giving total chi2_reg 7.34066                                                             
+chi2_sys contribution from param set 0 is 0                                                                                    
+chi2_sys contribution from regularisation 7.34066                                                                              
+nfitpar is: 1                                                                                                                  
+m_calls is: 2192                                                                                                               
+Chi2 for this iter: 95.2696 
+
+reg_p1 = 1
+
+
+param 0 of class 0 has value 0.635172 giving total chi2_reg 0                  
+param 1 of class 0 has value 1.80181 giving total chi2_reg 1.16663             
+param 2 of class 0 has value 0.891606 giving total chi2_reg 2.07683            
+param 3 of class 0 has value 0.891603 giving total chi2_reg 2.07684            
+param 4 of class 0 has value 1.34129 giving total chi2_reg 2.52653             
+param 5 of class 0 has value 1.01589 giving total chi2_reg 2.85193             
+param 6 of class 0 has value 1.01589 giving total chi2_reg 2.85193             
+param 7 of class 0 has value 1.30893 giving total chi2_reg 3.14498             
+param 8 of class 0 has value 0.84821 giving total chi2_reg 3.6057              
+param 9 of class 0 has value 1.1603 giving total chi2_reg 3.91779              
+chi2_sys contribution from param set 0 is 0                                    
+chi2_sys contribution from regularisation 3.91779                              
+nfitpar is: 1                                                                  
+m_calls is: 1145                                                               
+Chi2 for this iter: 68.2143    
+
+reg_p1 = 5    
+param 0 of class 0 has value 0.732789 giving total chi2_reg 0                 
+param 1 of class 0 has value 1.56842 giving total chi2_reg 4.17815            
+param 2 of class 0 has value 1.03524 giving total chi2_reg 6.84405            
+param 3 of class 0 has value 1.03524 giving total chi2_reg 6.84405            
+param 4 of class 0 has value 1.09262 giving total chi2_reg 7.13095            
+param 5 of class 0 has value 1.09246 giving total chi2_reg 7.13175            
+param 6 of class 0 has value 1.07138 giving total chi2_reg 7.23713            
+param 7 of class 0 has value 1.23245 giving total chi2_reg 8.04248            
+param 8 of class 0 has value 0.892668 giving total chi2_reg 9.74139           
+param 9 of class 0 has value 1.14338 giving total chi2_reg 10.9949            
+chi2_sys contribution from param set 0 is 0                                   
+chi2_sys contribution from regularisation 10.9949                             
+nfitpar is: 1                                                                 
+m_calls is: 1284                                                              
+Chi2 for this iter: 80.1524    
+         
+
+New Binning (Coarse V4 - 5 bins)
+
+reg_p1 = 5    
+
+Chi2 for this iter: 35.0638                                                   
+param 0 of class 0 has value 1.0857 giving total chi2_reg 0                   
+param 1 of class 0 has value 1.08563 giving total chi2_reg 0.000370892        
+param 2 of class 0 has value 1.12162 giving total chi2_reg 0.180351           
+param 3 of class 0 has value 1.12162 giving total chi2_reg 0.180353           
+param 4 of class 0 has value 1.03656 giving total chi2_reg 0.605655           
+chi2_sys contribution from param set 0 is 0                                   
+chi2_sys contribution from regularisation 0.605655                            
+nfitpar is: 1                                                                 
+m_calls is: 691                                                               
+Chi2 for this iter: 35.0638   
+
+
+

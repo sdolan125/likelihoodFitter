@@ -1,0 +1,28 @@
+#!/bin/csh
+set c=1
+set s=1
+
+rm job_*
+rm launchJob
+touch launchJob
+
+while ( $c <= 100 )
+#echo "qsub -P P_t2k -l s_vmem=1G,ct=0:10:00,s_fsize=1G,sps=1 job_$c.sh" >> launchJob
+echo "./job_$c.sh" >> launchJob
+
+echo "job  number " $c
+cp templateJob job_$c.sh
+
+@ s *= 43 
+echo "with seed " $s
+
+sed -i 's/'"-s 12345"'/'"-s $s"'/g' job_$c.sh
+sed -i 's/'"prova.root"'/'"ccqe_results_$c.root"'/g' job_$c.sh
+chmod +x job_$c.sh
+
+@ c = $c + 1
+@ s = $c
+
+chmod +x launchJob
+
+end
