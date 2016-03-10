@@ -3,7 +3,7 @@ lndir=$LNDIR
 #source root
 source $lndir/fitter/lh-soft.sh
 #set code directory
-fitdir=$FITDIR/utils/src/
+fitdir=$FITDIR/utils/src
 echo $fitdir
 
 #set in/out file names
