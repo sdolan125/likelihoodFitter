@@ -4,7 +4,7 @@ lndir=$LNDIR
 source $lndir/fitter/lh-soft.sh
 #set code directory
 fitdir=$FITDIR/utils/src/
-#echo $fitdir
+echo $fitdir
 
 #set in/out file names
 infile=$1
