@@ -38,7 +38,7 @@ int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TSt
     // i.e choosing n in accum_level[0][branch_i]>n
     const int nbranches = 9;
     //const int accumToCut[nbranches] = {5,6,7,7,6,4,3,5,7,6};
-    const int accumToCut[nbranches] =   {8,9,8,7,8,8,9,7,8};
+    const int accumToCut[nbranches] =   {7,8,7,6,7,7,8,6,7};
     
     TFile *infile = new TFile(inFileName);
     TTree *intree = (TTree*)infile->Get(inTreeName);
@@ -80,6 +80,7 @@ int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TSt
     Float_t         selpi_truecostheta;
     //***********************************//
     
+    printf("Setting Branch Inofrmation\n");
     intree->SetBranchAddress("accum_level", &accum_level);//in coplowe's HL2
     intree->SetBranchAddress("reaction", &reaction);//in coplowe's HL2
     intree->SetBranchAddress("mectopology", &mectopology);//in coplowe's HL2
@@ -137,14 +138,16 @@ int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TSt
     outtree->Branch("selpi_truecostheta", &selpi_truecostheta, "selpi_truecostheta/F");
     //***********************************//
     
-    
     Long64_t nentries = intree->GetEntriesFast();
+    printf("Coverting tree with %d entries.\n",nentries);
     Long64_t nbytes = 0, nb = 0;
     int passCount=0;
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
         nb = intree->GetEntry(jentry); nbytes += nb;
         passCount=0;
         RecoNuEnergy=TrueNuEnergy;
+        
+        if(jentry%5000==0) printf("%d/%d complete\n",jentry, nentries);
         
         int branches_passed[10]={0};
         for(int i=0; i<nbranches; i++){
