@@ -28,7 +28,7 @@ echo $infile
 echo $outfile
 
 #link code to current directory
-ln -s $fitdir/treeConvert.* .
+ln -s $fitdir/treeConvert.* $mydir
 
 root -l <<EOF
 .L treeConvert.cc
