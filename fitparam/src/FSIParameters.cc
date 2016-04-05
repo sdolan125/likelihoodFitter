@@ -15,35 +15,67 @@ FSIParameters::FSIParameters(const char *name)
   //parameter number, names & prior values
   //(Npar, values and ordering should be in agreement with input TFiles)
   //Npar=5;
+  // Npar=6;
+  // pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"InelLow"));
+  // pars_prior.push_back(1.0);
+  // pars_step.push_back(0.412);
+  // pars_limlow.push_back(-0.236);
+  // pars_limhigh.push_back(2.236);
+  // pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"InelHigh"));
+  // pars_prior.push_back(1.0);
+  // pars_step.push_back(0.338);
+  // pars_limlow.push_back(-0.014);
+  // pars_limhigh.push_back(2.014);
+  // pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"PiAbs"));
+  // pars_prior.push_back(1.0);
+  // pars_step.push_back(0.412);
+  // pars_limlow.push_back(-0.236);
+  // pars_limhigh.push_back(2.236);
+  // pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"PiProd"));
+  // pars_prior.push_back(1.0);
+  // pars_step.push_back(0.5);
+  // pars_limlow.push_back(-0.5);
+  // pars_limhigh.push_back(2.5);
+  // pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"CExLow"));
+  // pars_prior.push_back(1.0);
+  // pars_step.push_back(0.567);
+  // pars_limlow.push_back(-0.701);
+  // pars_limhigh.push_back(2.701);
+  // pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"CExHigh"));
+  // pars_prior.push_back(1.0);
+  // pars_step.push_back(0.278);
+  // pars_limlow.push_back(0);
+  // pars_limhigh.push_back(2);
+
   Npar=6;
   pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"InelLow"));
   pars_prior.push_back(1.0);
-  pars_step.push_back(0.412);
-  pars_limlow.push_back(-0.236);
+  pars_step.push_back(0.10);
+  pars_limlow.push_back(0);
   pars_limhigh.push_back(2.236);
   pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"InelHigh"));
   pars_prior.push_back(1.0);
-  pars_step.push_back(0.338);
-  pars_limlow.push_back(-0.014);
+  pars_step.push_back(0.10);
+  pars_limlow.push_back(0);
   pars_limhigh.push_back(2.014);
   pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"PiAbs"));
   pars_prior.push_back(1.0);
-  pars_step.push_back(0.412);
-  pars_limlow.push_back(-0.236);
+  pars_step.push_back(0.10);
+  pars_limlow.push_back(0);
   pars_limhigh.push_back(2.236);
   pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"PiProd"));
   pars_prior.push_back(1.0);
-  pars_step.push_back(0.5);
-  pars_limlow.push_back(-0.5);
+  pars_step.push_back(0.10);
+  pars_limlow.push_back(0);
   pars_limhigh.push_back(2.5);
   pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"CExLow"));
   pars_prior.push_back(1.0);
-  pars_step.push_back(0.567);
-  pars_limlow.push_back(-0.701);
+  pars_step.push_back(0.10);
+  pars_limlow.push_back(0);
   pars_limhigh.push_back(2.701);
   pars_name.push_back(Form("%s%d%s", m_name.c_str(), 1,"CExHigh"));
   pars_prior.push_back(1.0);
-  pars_step.push_back(0.278);
+  pars_step.push_back(0.10);
   pars_limlow.push_back(0);
   pars_limhigh.push_back(2);
 
@@ -53,57 +85,123 @@ FSIParameters::FSIParameters(const char *name)
 FSIParameters::~FSIParameters()
 {;}
 
+// // store response functions in vector of FSI "bins" (Ereco, Etrue, reac, topo)
+// void FSIParameters::StoreResponseFunctions(vector<TFile*> respfuncs, std::vector<std::pair <double,double> > v_pedges, 
+// 					    std::vector<std::pair <double,double> > v_cthedges)
+// {
+//   for ( int stInt = mutrack; stInt != crDIS+1; stInt++ ){
+//     SampleTypes sampletype = static_cast <SampleTypes> (stInt);
+//     for ( int rtInt = ReCCQE; rtInt != OutFGD+1; rtInt++){
+//       ReactionTypes reactype = static_cast<ReactionTypes>(rtInt);
+//       cout<<"reading response functions for topology "<<stInt<<"  reaction "<<rtInt<<endl;
+//       int nccqebins=v_pedges.size();
+//       for(int br=0;br<nccqebins;br++){//reco kinematics bin
+//         //cout<<"reading rewighting function for reco bin "<<br<<endl;
+//         for(int bt=0;bt<nccqebins;bt++){//true kinematics bin
+//           //cout<<"reading rewighting function for true bin "<<bt<<endl;
+//           FSIBin bin;
+//           bin.recoPlow = v_pedges[br].first;
+//           bin.recoPhigh = v_pedges[br].second;
+//           bin.truePlow = v_pedges[bt].first; //same binning for reco and true
+//           bin.truePhigh = v_pedges[bt].second;
+//           bin.recoCTHlow = v_cthedges[br].first;
+//           bin.recoCTHhigh = v_cthedges[br].second;
+//           bin.trueCTHlow = v_cthedges[bt].first; //same binning for reco and true
+//           bin.trueCTHhigh = v_cthedges[bt].second;
+//           bin.topology = sampletype; 
+//           bin.reaction = reactype; 
+//           if(fabs(br-bt)<21) {  //save memory if reco bin and true bin very far away
+//             for(uint i=0; i<Npar; i++){
+//               char name[200];
+//               sprintf(name,"topology_%d/RecBin_%d_trueBin_%d_topology_%d_reac_%d",stInt,br,bt,stInt,rtInt);
+//               TGraph* g=(TGraph*)respfuncs[i]->Get(name);
+//               g->SetName(name);
+//               bin.respfuncs.push_back(g);
+//             }
+//           }
+//           m_bins.push_back(bin);
+//         }
+//       }
+//     }
+//   }
+
+//   /*for(size_t j=0; j<m_bins.size();j++){
+//     cout<<j<<" topology: "<<m_bins[j].topology<<"  reaction: "<<m_bins[j].reaction
+// 	<<"  recoP: "<<m_bins[j].recoPlow<<"-"<<m_bins[j].recoPhigh
+// 	<<"  trueP: "<<m_bins[j].truePlow<<"-"<<m_bins[j].truePhigh
+// 	<<"  recoCTH: "<<m_bins[j].recoCTHlow<<"-"<<m_bins[j].recoCTHhigh
+// 	<<"  trueCTH: "<<m_bins[j].trueCTHlow<<"-"<<m_bins[j].trueCTHhigh<<endl;
+//     if(m_bins[j].respfuncs.size()>0)
+// 	cout<<" response function name "<<m_bins[j].respfuncs[0]->GetName()<<endl;
+//       else
+// 	cout<<" no response function"<<endl;
+// 	}*/
+  
+// }
+
 // store response functions in vector of FSI "bins" (Ereco, Etrue, reac, topo)
 void FSIParameters::StoreResponseFunctions(vector<TFile*> respfuncs, std::vector<std::pair <double,double> > v_pedges, 
-					    std::vector<std::pair <double,double> > v_cthedges)
+              std::vector<std::pair <double,double> > v_cthedges)
 {
-  for ( int stInt = mutrack; stInt != crDIS+1; stInt++ ){
+  double dummyx[7]={-1,-0.66,-0.33,0,0.33,0.66,1};
+  double dummyy[7]={1,1,1,1,1,1,1};
+  int    dummyn=7;
+ 
+  for ( int stInt = 0; stInt < 8; stInt++ ){
+    if((stInt==0) || (stInt==4)) continue; // Ignore branches with no proton
     SampleTypes sampletype = static_cast <SampleTypes> (stInt);
-    for ( int rtInt = ReCCQE; rtInt != OutFGD+1; rtInt++){
+    for ( int rtInt = 0; rtInt < 7; rtInt++){
       ReactionTypes reactype = static_cast<ReactionTypes>(rtInt);
+      if(rtInt==6) rtInt=7; // Hack to deal with missing mectopo6
       cout<<"reading response functions for topology "<<stInt<<"  reaction "<<rtInt<<endl;
       int nccqebins=v_pedges.size();
       for(int br=0;br<nccqebins;br++){//reco kinematics bin
-	//cout<<"reading rewighting function for reco bin "<<br<<endl;
-	for(int bt=0;bt<nccqebins;bt++){//true kinematics bin
-	  //cout<<"reading rewighting function for true bin "<<bt<<endl;
-	  FSIBin bin;
-	  bin.recoPlow = v_pedges[br].first;
-	  bin.recoPhigh = v_pedges[br].second;
-	  bin.truePlow = v_pedges[bt].first; //same binning for reco and true
-	  bin.truePhigh = v_pedges[bt].second;
-	  bin.recoCTHlow = v_cthedges[br].first;
-	  bin.recoCTHhigh = v_cthedges[br].second;
-	  bin.trueCTHlow = v_cthedges[bt].first; //same binning for reco and true
-	  bin.trueCTHhigh = v_cthedges[bt].second;
-	  bin.topology = sampletype; 
-	  bin.reaction = reactype; 
-	  if(fabs(br-bt)<21) {  //save memory if reco bin and true bin very far away
-	    for(uint i=0; i<Npar; i++){
-	      char name[200];
-	      sprintf(name,"topology_%d/RecBin_%d_trueBin_%d_topology_%d_reac_%d",stInt,br,bt,stInt,rtInt);
-	      TGraph* g=(TGraph*)respfuncs[i]->Get(name);
-	      g->SetName(name);
-	      bin.respfuncs.push_back(g);
-	    }
-	  }
-	  m_bins.push_back(bin);
-	}
+        cout<<"reading rewighting function for reco bin "<<br<<endl;
+        for(int bt=0;bt<nccqebins;bt++){//true kinematics bin
+          cout<<"reading rewighting function for true bin "<<bt<<endl;
+          FSIBin bin;
+          bin.recoPlow = v_pedges[br].first;
+          bin.recoPhigh = v_pedges[br].second;
+          bin.truePlow = v_pedges[bt].first; //same binning for reco and true
+          bin.truePhigh = v_pedges[bt].second;
+          bin.recoCTHlow = v_cthedges[br].first;
+          bin.recoCTHhigh = v_cthedges[br].second;
+          bin.trueCTHlow = v_cthedges[bt].first; //same binning for reco and true
+          bin.trueCTHhigh = v_cthedges[bt].second;
+          bin.topology = sampletype; 
+          bin.reaction = reactype; 
+          if(fabs(br-bt)<21) {  //save memory if reco bin and true bin very far away
+            for(uint i=0; i<Npar; i++){
+              char name[200];
+              sprintf(name,"topology_%d/RecBin_%d_trueBin_%d_topology_%d_reac_%d",stInt,br,bt,stInt,rtInt);
+              cout<<respfuncs[i]->GetName()<<" "<<name<<endl;
+              TGraph* g=(TGraph*)respfuncs[i]->Get(name);
+              cout<<g<<endl;
+              if(!g){
+                cout << "Warning, creating dummy respfunc" << endl;
+                g = new TGraph(dummyn, dummyx, dummyy);
+              }
+              g->SetName(name);
+              bin.respfuncs.push_back(g);
+            }
+          }
+          m_bins.push_back(bin);
+        }
       }
     }
   }
 
   /*for(size_t j=0; j<m_bins.size();j++){
     cout<<j<<" topology: "<<m_bins[j].topology<<"  reaction: "<<m_bins[j].reaction
-	<<"  recoP: "<<m_bins[j].recoPlow<<"-"<<m_bins[j].recoPhigh
-	<<"  trueP: "<<m_bins[j].truePlow<<"-"<<m_bins[j].truePhigh
-	<<"  recoCTH: "<<m_bins[j].recoCTHlow<<"-"<<m_bins[j].recoCTHhigh
-	<<"  trueCTH: "<<m_bins[j].trueCTHlow<<"-"<<m_bins[j].trueCTHhigh<<endl;
+  <<"  recoP: "<<m_bins[j].recoPlow<<"-"<<m_bins[j].recoPhigh
+  <<"  trueP: "<<m_bins[j].truePlow<<"-"<<m_bins[j].truePhigh
+  <<"  recoCTH: "<<m_bins[j].recoCTHlow<<"-"<<m_bins[j].recoCTHhigh
+  <<"  trueCTH: "<<m_bins[j].trueCTHlow<<"-"<<m_bins[j].trueCTHhigh<<endl;
     if(m_bins[j].respfuncs.size()>0)
-	cout<<" response function name "<<m_bins[j].respfuncs[0]->GetName()<<endl;
+  cout<<" response function name "<<m_bins[j].respfuncs[0]->GetName()<<endl;
       else
-	cout<<" no response function"<<endl;
-	}*/
+  cout<<" no response function"<<endl;
+  }*/
   
 }
 

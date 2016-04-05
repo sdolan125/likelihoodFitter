@@ -1,0 +1,31 @@
+void makelcurve(TString outnameL="lCurve.root", TString outnameComp="comp.root"){
+  gStyle->SetOptStat(0);
+  const Int_t np = 9;
+  Double_t reg[np] = {0.01,0.1,1,3.2,10,32,100,320,1000};
+  Double_t chi2[np] = {44.1951, 44.2426, 44.6262, 45.2205, 46.2362, 47.932, 50.2219, 52.4776, 53.9582};
+  Double_t chi2reg[np] = {0.00540192, 0.0515964, 0.356746, 0.680621, 1.13718, 1.78859, 2.11273, 0.956771};
+  Double_t chi2rnorm[np];
+  for(int i=0;i<np;i++) chi2rnorm[i]=(chi2reg[i]/reg[i]);
+  TGraph* lc = new TGraph(np, chi2, chi2rnorm);
+  TGraph* comp1 = new TGraph(np, reg, chi2);
+  TGraph* comp2 = new TGraph(np, reg, chi2rnorm);
+  TCanvas *canvasComp = new TCanvas("canvasComp", "canvasComp");
+  comp1->Draw("AC*");
+  comp1->GetYaxis()->SetTitle("#\chi^{2} contribution");
+  comp1->GetYaxis()->SetRangeUser(1,1100);
+  comp1->GetXaxis()->SetTitle("Regularisation Parameter");
+  comp1->SetTitle("");
+  comp2->Draw("C*same");
+  canvasComp->SetTickx(); canvasComp->SetTicky();
+  canvasComp->SetLogx(); canvasComp->SetLogy();
+  canvasComp->SetTitle("");
+  canvasComp->SaveAs(outnameComp);  
+  TCanvas *canvasL = new TCanvas("canvasL","canvasL");
+  lc->Draw("AC*");
+  lc->GetYaxis()->SetTitle("Normalised Penalty");
+  lc->GetXaxis()->SetTitle("#\chi^{2} of Fit");
+  lc->SetTitle("");
+  canvasL->SetTickx(); canvasL->SetTicky();
+  canvasL->SetTitle("");
+  canvasL->SaveAs(outnameL);
+}

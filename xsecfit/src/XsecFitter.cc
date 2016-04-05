@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iterator>
 #include <algorithm> 
+#include <fstream>
+#include <iostream>
 
 //#include "../include/AnySample.hh"
 
@@ -333,6 +335,14 @@ void XsecFitter::fcn(Int_t &npar, Double_t *gin, Double_t &f,
   //Print status of the fit:
   cout << "m_calls is: " << m_calls << endl;
   cout << "Chi2 for this iter: " << f << endl;
+
+  // Update final chi2 file for L curve calc:
+
+  ofstream outfile;
+  outfile.open("chi2.txt", ios::out | ios::trunc );
+  outfile << reg_p1 << ", " << chi2_stat << ", " << chi2_reg << ", " << chi2_sys << ", " << chi2_stat + chi2_sys << endl;  
+  outfile.close();
+
 }
 
 // Write hists for reweighted events
@@ -340,6 +350,9 @@ void XsecFitter::DoSaveEvents(int fititer)
 {
   for(size_t s=0;s<m_samples.size();s++){
     m_samples[s]->Write(m_dir, Form("evhist_sam%d_iter%d",(int)s,m_calls), fititer);
+    if(m_calls>0){
+      m_samples[s]->Write(m_dir, Form("evhist_sam%d_finaliter",(int)s), fititer);
+    }
   }
 }
 

@@ -29,7 +29,9 @@ int main(int argc, char *argv[])
   //string fsel     = "../inputs/CCQE_neut_h2.root"; 
   //string fsel     = "../inputs/ConvertedCC0PiV2.root";
   //string fsel     = "../inputs/CC0Pi_6B_dpTvsMuMom_NeutAir.root";
-  string fsel     = "../inputs/CC0Pi_6B_dpTvsMuMom_kineVars_NeutAir.root";
+  //string fsel     = "../inputs/CC0Pi_6B_dpTvsMuMom_kineVars_NeutAir.root";
+  string fsel     = "../inputs/mar16/NeutAirAllSystV5_recCuts.root";
+  //string fsel     = "../inputs/mar16/NeutAirAllSystV5FirstHalf.root";
   //string fsel     = "../inputs/CCQE_neut_h2_sigOppCrazy.root";
   //string fsel     = "../inputs/CCQE_neut_h2_sigCrazy.root";
   //string fsel     = "../inputs/CCQE_neut_h2_pionversionBiased.root";
@@ -41,29 +43,38 @@ int main(int argc, char *argv[])
   //string fakeData     = "../inputs/ConvertedCC0PiV2.root";
   //string fakeData     = "../inputs/CC0Pi_6B_dpTvsMuMom_NeutWater.root";
   //string fakeData      = "../inputs/CC0Pi_6B_dpTvsMuMom_Genie.root";
-  string fakeData      = "../inputs/CC0Pi_6B_dpTvsMuMom_kineVars_Genie.root";
+  //string fakeData      = "../inputs/CC0Pi_6B_dpTvsMuMom_kineVars_Genie.root";
   //string fakeData      = "../inputs/CC0Pi_6B_dpTvsMuMom_kineVars_NeutAir.root";
   //string fakeData      = "../inputs/CC0Pi_6B_dpTvsMuMom_kineVars_NeutWater.root";
+  string fakeData        = "../inputs/mar16/NeutWaterNoSystV2_recCuts.root";
+  //string fakeData     = "../inputs/mar16/NeutAirAllSystV5Mar16.root";
+  //string fakeData     = "../inputs/mar16/NeutAirAllSystV5SecondHalf.root";
+  //string fakeData     = "../inputs/mar16/GenieAirNoSystV2_recCuts.root";
   //string fakeData     = "../inputs/CCQE_neut_h2_pionversionBiased.root";
   //string fakeData       = "../inputs/CCQE_neut_h2_bkgBias.root";
   //string fakeData       = "../inputs/CCQE_neut_h2.root";
   //string ffluxcov     = "../inputs/flux_covariance_banff_run1to4_v1.root";  
   string ffluxcov     = "../inputs/flux_covariance_banff_13av1.1.root";  
-  string fdetcov_fine = "../inputs/cov_matrix_det_finebins.root";  //USING NEW BINNING DET MATRIX 
-  string fdetcov = "../inputs/cov_matrix_det_averagebins.root";  //USING NEW BINNING DET MATRIX 
+  string fdetcov_fine = "../inputs/mar16/CovMatTrans_300ToysNeutAirV5_newBinning_fine.root";  //USING NEW BINNING DET MATRIX 
+  string fdetcov = "../inputs/mar16/CovMatTrans_300ToysNeutAirV5_newBinning.root";  //USING NEW BINNING DET MATRIX 
   string fcovFSI     = "../inputs/fromBANFF/fsi_cov.root";   //not used anymore
   //string fccqebin = "../inputs/ccqebins_Dec2014.txt";
   //string fccqebin = "../inputs/dptbins_V1.txt";
-  string fccqebin = "../inputs/dptbins_coarseV6_8binRec.txt";
+  string fccqebin = "../inputs/dptbins_coarseV7.txt";
   //string fccqebin = "../inputs/OneBin.txt";
   //string fccqebin = "../inputs/ccqebins_Andy.txt";
   string fnameout = "ccqe_fitresults.root";
   //double potD     = 60;   //in units of 10^19
   //double potMC    = 389.5;//204.95; //in units 10^19 
-  double potD     = 57.34;   //in units of 10^19
-  double potMC    = 57.34; //in units 10^19 
+  // double potD     = 57.34;   //in units of 10^19
+  // double potMC    = 57.34; //in units 10^19 
+  //double potD     = 372.67;   //in units of 10^19 GENIE Air
+  double potD     = 349.15;   //in units of 10^19 NEUT Water
+  //double potD    = 331.6; //in units 10^19 Neut Air
+  double potMC    = 331.6; //in units 10^19 Neut Air
   int seed        = 1019;
   double regparam = 0.0;
+  int nsamples = 0;
 
   //get command line options
   char cc;
@@ -150,26 +161,89 @@ int main(int argc, char *argv[])
 
   /********************************COV.MATRIX FOR DETECTOR SYSTEMATICS*********************/
   //setup D1,D2 bins, starting param values and covm for det syst --------------
-  TVectorD* det_weights = (TVectorD*)findetcov->Get("det_weights");
+  //TVectorD* det_weights = (TVectorD*)findetcov->Get("det_weights");
+
+  const int ndetcovmatele = 24;
+
+  double arr[ndetcovmatele];
+  for(int i=0; i<ndetcovmatele; i++){ arr[i]=(1.0);}
+
+  TVectorD* det_weights = new TVectorD(ndetcovmatele, arr);
+
+  det_weights->Print();
  
-  TMatrixDSym *cov_det_in   = (TMatrixDSym*)findetcov->Get("cov_det");
+  //TMatrixDSym *cov_det_in   = (TMatrixDSym*)findetcov->Get("covMat_norm");
+
+  //Temp hack to remove samples from matrix ***
+  TMatrixDSym *cov_det_now   = (TMatrixDSym*)findetcov->Get("covMat_norm");
+  TMatrixDSym *cov_det_in   = new TMatrixDSym(24);
+  cov_det_now->GetSub(0,23,*cov_det_in);
+  cov_det_in->Print();
+  // ***
+
+
+  if(!cov_det_in) cout << "Warning! Problem opening detector cov matrix" << endl;
   TMatrixDSym cov_det(cov_det_in->GetNrows());
   for(size_t m=0; m<cov_det_in->GetNrows(); m++){
     for(size_t k=0; k<cov_det_in->GetNrows(); k++){
       cov_det(m, k) = (*cov_det_in)(m,k);
+      //Add small terms to the last sample to make teh matrix invertable:
+      //if((m>19)&&(k>19)&&(m==k)) cov_det(m, k) = 1.1*((*cov_det_in)(m,k));
     }
   }
 
+  cov_det.Print();
+  double det = cov_det.Determinant();
+
+  if(abs(det) < 1e-99){
+    cout << "Warning, det cov matrix is non invertable. Det is:" << endl;
+    cout << det << endl;
+    return 0;   
+  }  
+
+
   findetcov->Close();
 
-  TVectorD* det_weights_fine = (TVectorD*)findetcov_fine->Get("det_weights");
-  TMatrixDSym *cov_det_in_fine   = (TMatrixDSym*)findetcov_fine->Get("cov_det");
+  // ***** Fine binning: *****
+
+  const int ndetcovmatele_fine = 48;
+
+  double arr_fine[ndetcovmatele_fine];
+  for(int i=0; i<ndetcovmatele_fine; i++){ arr_fine[i]=(1.0);}
+
+  TVectorD* det_weights_fine = new TVectorD(ndetcovmatele_fine, arr_fine);
+
+  det_weights_fine->Print();
+
+  //TVectorD* det_weights_fine = (TVectorD*)findetcov_fine->Get("det_weights");
+
+  //Temp hack to remove samples from matrix ***
+  TMatrixDSym *cov_det_now_fine   = (TMatrixDSym*)findetcov_fine->Get("covMat_norm");
+  TMatrixDSym *cov_det_in_fine   = new TMatrixDSym(ndetcovmatele_fine);
+  cov_det_now_fine->GetSub(0,(ndetcovmatele_fine-1),*cov_det_in_fine);
+  cov_det_in_fine->Print();
+  // ***
+
+  //TMatrixDSym *cov_det_in_fine   = (TMatrixDSym*)findetcov_fine->Get("cov_det");
+
   TMatrixDSym cov_det_fine(cov_det_in_fine->GetNrows());
   for(size_t m=0; m<cov_det_in_fine->GetNrows(); m++){
     for(size_t k=0; k<cov_det_in_fine->GetNrows(); k++){
       cov_det_fine(m, k) = (*cov_det_in_fine)(m,k);
     }
   }
+
+  cov_det_fine.Print();
+  double det_fine = cov_det_fine.Determinant();
+
+  if(abs(det_fine) < 1e-99){
+    cout << "Warning, det cov matrix with fine binning is non invertable. Det is:" << endl;
+    cout << det_fine << endl;
+    return 0;   
+  }  
+
+  findetcov_fine->Close();
+
   
   /***********************************************************************************/
 
@@ -182,25 +256,25 @@ int main(int argc, char *argv[])
   //responsefunctions.push_back(PFrespfunc);
   //TFile* SFrespfunc = new TFile("../inputs/responsefunc/SF_all_variation.root");
   //responsefunctions.push_back(SFrespfunc);
-  /*  TFile* MAResrespfunc = new TFile("../inputs/responsefunc/MARes_all_variation.root");
-  responsefunctions.push_back(MAResrespfunc);
-  TFile* CCOthrespfunc = new TFile("../inputs/responsefunc/CCOther_all_variation.root");
-  responsefunctions.push_back(CCOthrespfunc);
-  TFile* PilessDcyrespfunc = new TFile("../inputs/responsefunc/PilessDcy_all_variation.root");
-  responsefunctions.push_back(PilessDcyrespfunc);
-  TFile* CC1piE0respfunc = new TFile("../inputs/responsefunc/CC1piE0_all_variation.root");
-  responsefunctions.push_back(CC1piE0respfunc);
-  TFile* CC1piE1respfunc = new TFile("../inputs/responsefunc/CC1piE1_all_variation.root");
-  responsefunctions.push_back(CC1piE1respfunc);
-  TFile* CCCohE0respfunc = new TFile("../inputs/responsefunc/CCCohE0_all_variation.root");
-  responsefunctions.push_back(CCCohE0respfunc);
-  TFile* NCOthrespfunc = new TFile("../inputs/responsefunc/NCOtherE0_all_variation.root");
-  responsefunctions.push_back(NCOthrespfunc);
-  TFile* NC1pi0E0respfunc = new TFile("../inputs/responsefunc/NC1pi0E0_all_variation.root");
-  responsefunctions.push_back(NC1pi0E0respfunc);
-  TFile* NC1piE0respfunc = new TFile("../inputs/responsefunc/NC1piE0_all_variation.root");
-  responsefunctions.push_back(NC1piE0respfunc);
-  */
+  //  TFile* MAResrespfunc = new TFile("../inputs/responsefuncSD/MARes_all_variation.root");
+  // responsefunctions.push_back(MAResrespfunc);
+  // TFile* CCOthrespfunc = new TFile("../inputs/responsefunc/CCOther_all_variation.root");
+  // responsefunctions.push_back(CCOthrespfunc);
+  // TFile* PilessDcyrespfunc = new TFile("../inputs/responsefunc/PilessDcy_all_variation.root");
+  // responsefunctions.push_back(PilessDcyrespfunc);
+  // TFile* CC1piE0respfunc = new TFile("../inputs/responsefunc/CC1piE0_all_variation.root");
+  // responsefunctions.push_back(CC1piE0respfunc);
+  // TFile* CC1piE1respfunc = new TFile("../inputs/responsefunc/CC1piE1_all_variation.root");
+  // responsefunctions.push_back(CC1piE1respfunc);
+  // TFile* CCCohE0respfunc = new TFile("../inputs/responsefunc/CCCohE0_all_variation.root");
+  // responsefunctions.push_back(CCCohE0respfunc);
+  // TFile* NCOthrespfunc = new TFile("../inputs/responsefunc/NCOtherE0_all_variation.root");
+  // responsefunctions.push_back(NCOthrespfunc);
+  // TFile* NC1pi0E0respfunc = new TFile("../inputs/responsefunc/NC1pi0E0_all_variation.root");
+  // responsefunctions.push_back(NC1pi0E0respfunc);
+  // TFile* NC1piE0respfunc = new TFile("../inputs/responsefunc/NC1piE0_all_variation.root");
+  // responsefunctions.push_back(NC1piE0respfunc);
+
   //TMatrixDSym cov_xsec(5);
   //cov_xsec(0,0) = 0.03344; //MARes
   //cov_xsec(0,1) = 0;
@@ -217,18 +291,94 @@ int main(int argc, char *argv[])
   //cov_xsec(3,3) = 0.16; //CC1piE1
   //cov_xsec(3,4) = 0;
   //cov_xsec(4,4) = 0.1075; //NC1pi0
- TMatrixDSym cov_xsec(9);
-  cov_xsec(0,0) = 0.03344; //MARes
-  cov_xsec(0,1) = 0;
-  cov_xsec(0,2) = 0;
-  cov_xsec(0,3) = -0.01549;//MARes-CC1piE0
-  cov_xsec(0,4) = 0;
-  cov_xsec(0,5) = 0;
-  cov_xsec(0,6) = 0;
-  cov_xsec(0,7) = -0.01841;//MARes-NC1pi0
-  cov_xsec(0,8) = 0;
+  //TMatrixDSym cov_xsec(9);
+  // cov_xsec(0,0) = 0.03344; //MARes
+  // cov_xsec(0,1) = 0;
+  // cov_xsec(0,2) = 0;
+  // cov_xsec(0,3) = -0.01549;//MARes-CC1piE0
+  // cov_xsec(0,4) = 0;
+  // cov_xsec(0,5) = 0;
+  // cov_xsec(0,6) = 0;
+  // cov_xsec(0,7) = -0.01841;//MARes-NC1pi0
+  // cov_xsec(0,8) = 0;
 
-  cov_xsec(1,1) = 0.16; //CCother
+  // cov_xsec(1,1) = 0.16; //CCother
+  // cov_xsec(1,2) = 0;
+  // cov_xsec(1,3) = 0;
+  // cov_xsec(1,4) = 0;
+  // cov_xsec(1,5) = 0;
+  // cov_xsec(1,6) = 0;
+  // cov_xsec(1,7) = 0;
+  // cov_xsec(1,8) = 0;
+
+  // cov_xsec(2,2) = 0.04; //PilessDcy
+  // cov_xsec(2,3) = 0;
+  // cov_xsec(2,4) = 0;
+  // cov_xsec(2,5) = 0;
+  // cov_xsec(2,6) = 0;
+  // cov_xsec(2,7) = 0;
+  // cov_xsec(2,8) = 0;
+
+  // cov_xsec(3,3) = 0.1003; //CC1piE0
+  // cov_xsec(3,4) = 0;
+  // cov_xsec(3,5) = 0;
+  // cov_xsec(3,6) = 0;
+  // cov_xsec(3,7) = 0.07703; //CC1piE0-NC1pi0
+  // cov_xsec(3,8) = 0;
+
+  // cov_xsec(4,4) = 0.16; //CC1piE1
+  // cov_xsec(4,5) = 0;
+  // cov_xsec(4,6) = 0;
+  // cov_xsec(4,7) = 0;
+  // cov_xsec(4,8) = 0;
+
+  // cov_xsec(5,5) = 1; //CCCoh
+  // cov_xsec(5,6) = 0;
+  // cov_xsec(5,7) = 0;
+  // cov_xsec(5,8) = 0;
+
+  // cov_xsec(6,6) = 0.09; //NCOther
+  // cov_xsec(6,7) = 0;
+  // cov_xsec(6,8) = 0;
+  
+  // cov_xsec(7,7) = 0.1075; //NC1pi0
+  // cov_xsec(7,8) = 0;
+
+  // cov_xsec(8,8) = 0.09; //NC1pi (not present in 2013 BANFF matrix, added)
+          
+
+  TFile* CAResrespfunc = new TFile("../inputs/responsefuncSD/NXSec_CA5RES_allVariation.root");
+  responsefunctions.push_back(CAResrespfunc);
+  TFile* MAResrespfunc = new TFile("../inputs/responsefuncSD/NXSec_MaNFFRES_allVariation.root");
+  responsefunctions.push_back(MAResrespfunc);
+  TFile* BgResrespfunc = new TFile("../inputs/responsefuncSD/NXSec_BgSclRES_allVariation.root");
+  responsefunctions.push_back(BgResrespfunc);  
+  TFile* CCNuErespfunc = new TFile("../inputs/responsefuncSD/NIWG2012a_ccnueE0_allVariation.root");
+  responsefunctions.push_back(CCNuErespfunc);  
+  TFile* dismpirespfunc = new TFile("../inputs/responsefuncSD/NIWG2012a_dismpishp_allVariation.root");
+  responsefunctions.push_back(dismpirespfunc);  
+  TFile* CCCohrespfunc = new TFile("../inputs/responsefuncSD/NIWG2012a_cccohE0_allVariation.root");
+  responsefunctions.push_back(CCCohrespfunc);  
+  TFile* NCCohrespfunc = new TFile("../inputs/responsefuncSD/NIWG2012a_nccohE0_allVariation.root");
+  responsefunctions.push_back(NCCohrespfunc);  
+  TFile* NCOthrespfunc = new TFile("../inputs/responsefuncSD/NIWG2012a_ncotherE0_allVariation.root");
+  responsefunctions.push_back(NCOthrespfunc);  
+  TFile* EbCrespfunc = new TFile("../inputs/responsefuncSD/NIWG2014a_Eb_C12_allVariation.root");
+  responsefunctions.push_back(EbCrespfunc);  
+
+  TMatrixDSym cov_xsec(9);
+
+  cov_xsec(0,0) = 0.01412; //CA5Res
+  cov_xsec(0,1) = 0.0;
+  cov_xsec(0,2) = 0.0;
+  cov_xsec(0,3) = 0.0;
+  cov_xsec(0,4) = 0.0;
+  cov_xsec(0,5) = 0.0;
+  cov_xsec(0,6) = 0.0;
+  cov_xsec(0,7) = 0.0;
+  cov_xsec(0,8) = 0.0;
+
+  cov_xsec(1,1) = 0.02493; //MARES
   cov_xsec(1,2) = 0;
   cov_xsec(1,3) = 0;
   cov_xsec(1,4) = 0;
@@ -237,7 +387,7 @@ int main(int argc, char *argv[])
   cov_xsec(1,7) = 0;
   cov_xsec(1,8) = 0;
 
-  cov_xsec(2,2) = 0.04; //PilessDcy
+  cov_xsec(2,2) = 0.02367; //BgRES
   cov_xsec(2,3) = 0;
   cov_xsec(2,4) = 0;
   cov_xsec(2,5) = 0;
@@ -245,32 +395,32 @@ int main(int argc, char *argv[])
   cov_xsec(2,7) = 0;
   cov_xsec(2,8) = 0;
 
-  cov_xsec(3,3) = 0.1003; //CC1piE0
+  cov_xsec(3,3) = 0.0004; //CCNUE_0
   cov_xsec(3,4) = 0;
   cov_xsec(3,5) = 0;
   cov_xsec(3,6) = 0;
-  cov_xsec(3,7) = 0.07703; //CC1piE0-NC1pi0
+  cov_xsec(3,7) = 0; 
   cov_xsec(3,8) = 0;
 
-  cov_xsec(4,4) = 0.16; //CC1piE1
+  cov_xsec(4,4) = 0.16; //dismpishp
   cov_xsec(4,5) = 0;
   cov_xsec(4,6) = 0;
   cov_xsec(4,7) = 0;
   cov_xsec(4,8) = 0;
 
-  cov_xsec(5,5) = 1; //CCCoh
+  cov_xsec(5,5) = 1.0; //CCCOH
   cov_xsec(5,6) = 0;
   cov_xsec(5,7) = 0;
   cov_xsec(5,8) = 0;
 
-  cov_xsec(6,6) = 0.09; //NCOther
+  cov_xsec(6,6) = 0.09; //NCCOH
   cov_xsec(6,7) = 0;
   cov_xsec(6,8) = 0;
- 
-  cov_xsec(7,7) = 0.1075; //NC1pi0
+  
+  cov_xsec(7,7) = 0.09; //NCOTHER
   cov_xsec(7,8) = 0;
 
-  cov_xsec(8,8) = 0.09; //NC1pi (not present in 2013 BANFF matrix, added)
+  cov_xsec(8,8) = 0.1296; //Eb_C12 
           
   /*****************************************************************************************/
 
@@ -290,6 +440,20 @@ int main(int argc, char *argv[])
   TFile* FrCExHighrespfunc = new TFile("../inputs/responsefunc/FrCExHigh_all_variation.root");
   responsefunctions_FSI.push_back(FrCExHighrespfunc);
   */
+
+  TFile* FrInelLowrespfunc = new TFile("../inputs/responsefuncSD/NCasc_FrCExLow_pi_allVariation.root");
+  responsefunctions_FSI.push_back(FrInelLowrespfunc);
+  TFile* FrInelHighrespfunc = new TFile("../inputs/responsefuncSD/NCasc_FrInelHigh_pi_allVariation.root");
+  responsefunctions_FSI.push_back(FrInelHighrespfunc);
+  TFile* FrPiProdrespfunc = new TFile("../inputs/responsefuncSD/NCasc_FrPiProd_pi_allVariation.root");
+  responsefunctions_FSI.push_back(FrPiProdrespfunc);
+  TFile* FrAbsrespfunc = new TFile("../inputs/responsefuncSD/NCasc_FrAbs_pi_allVariation.root");
+  responsefunctions_FSI.push_back(FrAbsrespfunc);
+  TFile* FrCExLowrespfunc = new TFile("../inputs/responsefuncSD/NCasc_FrCExLow_pi_allVariation.root");
+  responsefunctions_FSI.push_back(FrCExLowrespfunc);
+  TFile* FrCExHighrespfunc = new TFile("../inputs/responsefuncSD/NCasc_FrInelHigh_pi_allVariation.root");
+  responsefunctions_FSI.push_back(FrCExHighrespfunc);
+  
   //FSI parameters are correlated (new from iRODS file)
   TMatrixDSym cov_fsi(6);
   cov_fsi(0,0)= 0.17;
@@ -372,6 +536,8 @@ int main(int argc, char *argv[])
 
    std::vector<std::pair<double, double> > v_D1edges;
    std::vector<std::pair<double, double> > v_D2edges;
+   std::vector<std::pair<double, double> > v_D1edges_Dummy;
+   std::vector<std::pair<double, double> > v_D2edges_Dummy;
    ifstream fin(fccqebin.c_str());
    assert(fin.is_open());
    string line;
@@ -387,6 +553,8 @@ int main(int argc, char *argv[])
 	 }
        v_D1edges.push_back(make_pair(D1_1,D1_2));
        v_D2edges.push_back(make_pair(D2_1,D2_2));
+       v_D1edges_Dummy.push_back(make_pair(D1_1-9999.0,D1_2-9999.0));
+       v_D2edges_Dummy.push_back(make_pair(D2_1-9999.0,D2_2-9999.0));
      }
    fin.close();
 
@@ -436,6 +604,9 @@ int main(int argc, char *argv[])
   */  
   
   vector<AnaSample*> samples;
+
+  // The sample ID (first arg) should match the cutBranch corresponding to it
+
   /*
   AnySample sam1(0, "MuTPC",v_D1edges, v_D2edges,tdata);
   sam1.SetNorm(potD/potMC);
@@ -453,10 +624,10 @@ int main(int argc, char *argv[])
   sam4.SetNorm(potD/potMC);
   samples.push_back(&sam4);
 
-  /*
-  AnySample sam5(4, "MuFGD",v_D1edges, v_D2edges,tdata);
-  sam5.SetNorm(potD/potMC);
-  samples.push_back(&sam5);
+  
+  // AnySample sam5(4, "MuFGD",v_D1edges, v_D2edges,tdata);
+  // sam5.SetNorm(potD/potMC);
+  // samples.push_back(&sam5);
   
   AnySample sam6(5, "CC1pi",v_D1edges, v_D2edges,tdata);
   sam6.SetNorm(potD/potMC);
@@ -465,19 +636,21 @@ int main(int argc, char *argv[])
   AnySample sam7(6, "DIS",v_D1edges, v_D2edges,tdata);
   sam7.SetNorm(potD/potMC);
   samples.push_back(&sam7);
-  */
+  
   
   AnySample sam8(7, "muTPC_Np",v_D1edges, v_D2edges,tdata);
   sam8.SetNorm(potD/potMC);
   samples.push_back(&sam8);
 
-  AnySample sam9(8, "muFGDpTPC_Np",v_D1edges, v_D2edges,tdata);
-  sam9.SetNorm(potD/potMC);
-  samples.push_back(&sam9);
+  // AnySample sam9(8, "muFGDpTPC_Np",v_D1edges, v_D2edges,tdata);
+  // sam9.SetNorm(potD/potMC);
+  // samples.push_back(&sam9);
 
-  AnySample sam10(9, "muFGD_Np",v_D1edges, v_D2edges,tdata);
-  sam10.SetNorm(potD/potMC);
-  samples.push_back(&sam10);
+  // AnySample sam10(9, "muFGD_Np",v_D1edges, v_D2edges,tdata);
+  // sam10.SetNorm(potD/potMC);
+  // samples.push_back(&sam10);
+
+  nsamples = samples.size();
   
   //--
   //read MC events
@@ -532,29 +705,31 @@ int main(int argc, char *argv[])
   fitpara.push_back(&fluxpara_norm);
   */
   //Det parameters
-  /*DetParameters detpara("../inputs/ccqebins_det_Dec2014.txt",det_weights,"par_detAve");
+  DetParameters detpara("../inputs/dptbins_coarseV7_covDet.txt", det_weights, samples, "par_detAve");
   detpara.SetCovarianceMatrix(&cov_det);
   detpara.InitEventMap(samples);
-  fitpara.push_back(&detpara);*/
-  /*DetParameters detpara_fine("../inputs/ccqebins_Dec2014.txt",det_weights_fine,"par_detFine");
+  fitpara.push_back(&detpara);
+
+
+  DetParameters detpara_fine("../inputs/dptbins_coarseV7.txt",det_weights_fine, samples, "par_detFine");
   detpara_fine.SetCovarianceMatrix(&cov_det_fine);
   detpara_fine.InitEventMap(samples);
   fitpara.push_back(&detpara_fine);
-  */
+  
   //Xsec parameters
-  /*XsecParameters xsecpara;
+  XsecParameters xsecpara;
   xsecpara.SetCovarianceMatrix(&cov_xsec);
   xsecpara.StoreResponseFunctions(responsefunctions, v_D1edges, v_D2edges);
   xsecpara.InitEventMap(samples);
   fitpara.push_back(&xsecpara);
-  */
+  
   //FSI parameters
-  /*FSIParameters fsipara;
+  FSIParameters fsipara;
   fsipara.SetCovarianceMatrix(&cov_fsi);
   fsipara.StoreResponseFunctions(responsefunctions_FSI, v_D1edges, v_D2edges);
   fsipara.InitEventMap(samples);
   fitpara.push_back(&fsipara);
-  */
+  
   //Nucleon FSI parameters
   /*NuclFSIParameters nuclfsipara;
   nuclfsipara.SetCovarianceMatrix(&cov_nuclfsi);

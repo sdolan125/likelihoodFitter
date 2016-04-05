@@ -1,1 +1,8 @@
-treeConvert("/data/t2kscratch/users/dolan/MECProcessing/CC0Pi/oct15HL2/job_cc0piAllSystGenieAir6B_wpt_out/allMerged.root", "default", "genieTestTree.root", "selmu_mom", "truemu_mom", "recDpT", "trueDpT")
+
+treeConvert("/data/t2k/dolan/MECProcessing/CC0Pi/mar15HL2/job_NeutWaterNoSystV1_out/allMerged.root", "default", "truth", "NeutWaterNoSystV1Mar16.root", "recDalphaT", "trueDalphaT", "trueDalphaT", "recDpT", "trueDpT", "trueDpT")
+
+treeConvert("/data/t2k/dolan/MECProcessing/CC0Pi/mar15HL2/job_NeutAirAllSystV3_out/allMerged.root", "default", "truth", "NeutAirAllSystV3Mar16.root", "selmu_mom", "truemu_mom", "truemu_mom", "recDpT", "trueDpT", "trueDpT")
+
+treeConvert("/data/t2k/dolan/MECProcessing/CC0Pi/mar15HL2/job_NeutWaterNoSystV2_out/allMerged.root", "default", "truth", "./mar16/NeutWaterNoSystV2Mar16.root", 1.0 ,"recDalphaT", "trueDalphaT", "trueDalphaT", "recDpT", "trueDpT", "trueDpT")
+
+treeConvert("/data/t2k/dolan/MECProcessing/CC0Pi/mar15HL2/job_NeutAirAllSystV5_out/allMerged.root", "default", "truth", "NeutAirAllSystV5SecondHalf.root" , 1.0 , 0, 0, "recDalphaT", "trueDalphaT", "trueDalphaT", "recDpT", "trueDpT", "trueDpT")

@@ -9,12 +9,12 @@ using namespace std;
 
 //ctor
 DetParameters::DetParameters(const char *fname,TVectorD* detweights,
-			     const char *name)
+			                       std::vector<AnaSample*> samples, const char *name)
 {
   m_name    = name;
  
   //get the binning from a file
-  SetBinning(fname);
+  SetBinning(fname, samples);
 
   //parameter names & prior values
   cout<<"Det weight starting values "<<endl;
@@ -34,34 +34,32 @@ DetParameters::DetParameters(const char *fname,TVectorD* detweights,
 DetParameters::~DetParameters()
 {;}
 
-void DetParameters::SetBinning(const char *fname)
+void DetParameters::SetBinning(const char *fname, std::vector<AnaSample*> &samples)
 {
   string line;
   DetBin bin;
   //loop over the 6 samples
-  for(int i=0; i<6; i++){
-    bin.sample=i;
+  for(int i=0; i<samples.size(); i++){
+    bin.sample=samples[i]->GetSampleType();
     ifstream fin(fname);
     assert(fin.is_open());
-    while (getline(fin, line))
-      {
-	stringstream ss(line);
-	double p1, p2, cth1, cth2;
-	if(!(ss>>cth1>>cth2>>p1>>p2))
-	  {
-	    cerr<<"Bad line format: "<<endl
-		<<"     "<<line<<endl;
-	    continue;
-	  }
-	bin.plow    = p1;
-	bin.phigh   = p2;
-	bin.cthlow  = cth1;
-	bin.cthhigh = cth2;
-	m_bins.push_back(bin);
-      }
+    while (getline(fin, line)){
+      stringstream ss(line);
+      double p1, p2, cth1, cth2;
+	    if(!(ss>>cth1>>cth2>>p1>>p2)) {
+	      cerr<<"Bad line format: "<< endl
+	  	      <<"     " << line << endl;
+	      continue;
+	    }
+	    bin.plow    = p1;
+	    bin.phigh   = p2;
+	    bin.cthlow  = cth1;
+	    bin.cthhigh = cth2;
+	    m_bins.push_back(bin);
+    }
     fin.close();
   }
- Npar = m_bins.size();
+  Npar = m_bins.size();
   
   cout<<endl<<"Det Syst binning:"<<endl;
   for(size_t i = 0;i<m_bins.size();i++)

@@ -101,10 +101,33 @@ void FitParameters::InitEventMap(std::vector<AnaSample*> &sample)
 	      int code = PASSEVENT; // -1 by default
         //if(ev->GetReaction() != ccqe_recode) //pass if not CCQE
         //if((ev->GetReaction()!=1)&&(ev->GetReaction()!=2)) //pass if not CC0Pi in mectopology cat
-        if(( (ev->GetReaction()!=1)&&(ev->GetReaction()!=2) )  ||
-           ( (ev->GetpMomTrue()<450)||(ev->GetmuMomTrue()<200)||(ev->GetpCosThetaTrue()<-1.0)||(ev->GetmuCosThetaTrue()<0.0) )) //pass if not CC0Pi+np (n>=1) in mectopology cat
-	      {
-	        row.push_back(code);
+
+        // // Pre FGD Fix Cuts:
+        // if(( (ev->GetReaction()!=1)&&(ev->GetReaction()!=2) )  ||
+        //    ( (ev->GetpMomTrue()<550)||(ev->GetpMomTrue()>1000)||(ev->GetmuMomTrue()<300)||(ev->GetpCosThetaTrue()<0.5)||(ev->GetmuCosThetaTrue()<-0.5) )) //pass if not CC0Pi+np (n>=1) in mectopology cat
+        // Pre FGD Fix Cuts:
+        // if(( (ev->GetReaction()==1)||(ev->GetReaction()==2) )  &&
+        //    ( (ev->GetpMomTrue()>550)&&(ev->GetpMomTrue()<1000)&&(ev->GetmuMomTrue()>300)&&(ev->GetpCosThetaTrue()>0.5)&&(ev->GetmuCosThetaTrue()>-0.5) )) //pass if not CC0Pi+np (n>=1) in mectopology cat
+        // { 
+        if(( (ev->GetReaction()==1)||(ev->GetReaction()==2) )  &&
+           ( (ev->GetpMomTrue()>450)&&(ev->GetmuMomTrue()>250)&&(ev->GetpCosThetaTrue()>0.4)&&(ev->GetmuCosThetaTrue()>-0.6) )) //pass if not CC0Pi+np (n>=1) in mectopology cat
+        {   
+          //get event true D1 and D2
+          double D1   = ev->GetTruePtrk();
+          double D2 = ev->GetTrueCThtrk();
+          int binn   = GetBinIndex(D1, D2);
+          if(binn == BADBIN)
+          {
+            cout<<"WARNING: "<<m_name<<" D1 = "<<D1<<" D2 = "
+                <<D2<<" fall outside bin ranges"<<endl;
+            cout<<"        This event will be ignored in analysis."
+                <<endl;
+          }
+          //cout << "FitParameters:InitEventMap: binn is " << binn << endl;  
+          row.push_back(binn);
+        }
+	      else{ 
+          row.push_back(code);
 
           //DEBUG TIME:
           //cout << "*** In if ***" << endl;
@@ -112,19 +135,7 @@ void FitParameters::InitEventMap(std::vector<AnaSample*> &sample)
           //
 	        continue;
 	      }
-	      //get event true D1 and D2
-	      double D1   = ev->GetTruePtrk();
-	      double D2 = ev->GetTrueCThtrk();
-	      int binn   = GetBinIndex(D1, D2);
-	      if(binn == BADBIN)
-	      {
-	        cout<<"WARNING: "<<m_name<<" D1 = "<<D1<<" D2 = "
-		          <<D2<<" fall outside bin ranges"<<endl;
-	        cout<<"        This event will be ignored in analysis."
-		          <<endl;
-	      }
-        //cout << "FitParameters:InitEventMap: binn is " << binn << endl;  
-	      row.push_back(binn);
+
 	    }
       m_evmap.push_back(row);
     }
@@ -143,10 +154,10 @@ void FitParameters::EventWeights(std::vector<AnaSample*> &sample,
   for(size_t s=0;s<sample.size();s++)
     {
       for(int i=0;i<sample[s]->GetN();i++)
-	{
-	  AnaEvent *ev = sample[s]->GetEvent(i);
-	  ReWeight(ev, s, i, params);
-	}
+	    {
+	      AnaEvent *ev = sample[s]->GetEvent(i);
+	      ReWeight(ev, s, i, params);
+	    }
     }
 }
 
@@ -178,11 +189,11 @@ void FitParameters::ReWeight(AnaEvent *event, int nsample, int nevent,
   else
     {
       if(binn>(int)params.size())
-	{
-	  cerr<<"ERROR: number of bins "<<m_name
-	      <<" does not match num of param"<<endl;
-	  event->AddEvWght(0.0);
-	}
+    	{
+	       cerr<<"ERROR: number of bins "<<m_name
+	           <<" does not match num of param"<<endl;
+	       event->AddEvWght(0.0);
+	    }
       event->AddEvWght(params[binn]);
       //cout << "ReWeight param " << binn << endl;
       //cout << "Weight is " << params[binn] << endl;

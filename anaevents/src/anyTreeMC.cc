@@ -26,7 +26,7 @@ void anyTreeMC::GetEvents(std::vector<AnaSample*> ana_samples)
       //create and fill event structure
       AnaEvent ev(jentry);
       ev.SetSampleType(qesampleFinal);
-      int evtTopo=evtTopology; //0 CC0pi, 1 CC1pi, 2 CCOther, 3 backg(NC+antinu), 7 OOFV
+      int evtTopo=evtTopology; //0 CC0pi0p, 1 CC0pi1p, 2 CC0pinp, 3 CC1pi, 4 CCOther, 5 backg(NC+antinu), 7 OOFV
       //if(reac==7) reac=4;
       //cout << "Evt Topology is " << evtTopo << endl;
       if(evtTopo>7) cout << "*** Warning: evtTopology>7, evt Topology is " << evtTopo << endl;
@@ -48,6 +48,19 @@ void anyTreeMC::GetEvents(std::vector<AnaSample*> ana_samples)
       ev.SetmuCosThetaTrue(muCosThetaTrue);
       ev.SetpCosThetaRec(pCosThetaRec);
       ev.SetpCosThetaTrue(pCosThetaTrue);
+
+      // Extra add-hoc cuts:
+
+      //Warning: cut only applied to the MC not the data!
+
+      // if ((pMomRec<450)||(muMomRec<250)||(muCosThetaRec<-0.6)||(pCosThetaRec<0.4)){
+      //   cout << "INFO (anyTreeMC.cc): Applying add-hoc cuts, are you sure you want to do this?"<< endl;
+      //   ev.SetEvWght(0.0);
+      //   ev.SetEvWghtMC(0.0);
+      // }        
+
+
+
       //ev.Print();
 
       //DEBUG TIME

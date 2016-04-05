@@ -29,12 +29,18 @@ void AnaFitParameters::SetCovarianceMatrix(TMatrixDSym *covmat)
   if(covariance != NULL) covariance->Delete();
   if(covarianceI != NULL) covarianceI->Delete();
   
+  double det;
   covariance  = new TMatrixDSym(*covmat);
   covarianceI = new TMatrixDSym(*covmat);
-  covarianceI->Invert();
+  (*covarianceI).Invert(&det);
 
   cout<<"Number of parameters in covariance matrix for "<<m_name
       <<" "<<covariance->GetNrows()<<endl;
+
+  cout << "Inverted Cov mat: " << endl;
+  covarianceI->Print();
+  cout << "Cov mat: " << endl;
+  covariance->Print();
 
   hasCovMat = true;
 }
@@ -48,17 +54,20 @@ double AnaFitParameters::GetChi2(std::vector<double> &params)
   if(!checkDims) //check dimensions of various things are ok
     {
       CheckDims(params);
+      cout << "AnaFitParameters.cc: Warning, dimension check failed" << endl;
       if(!checkDims) return 0.0;
     }
-  //for(size_t i=0;i<params.size();i++)
-  //cout<<i<<" "<<params[i]<<" "<<pars_prior[i]<<endl;
+
+  //for(size_t i=0;i<params.size();i++)  cout<<i<<" "<<params[i]<<" "<<pars_prior[i]<<endl;
+
   double chi2 = 0;
   for(int i=0; i<covarianceI->GetNrows(); i++)
+  {
     for(int j=0; j<covarianceI->GetNrows(); j++)
-      {
-	chi2+= (params[i]-pars_prior[i])*
-	  (params[j]-pars_prior[j])*(*covarianceI)(i,j);
-      }
+    {
+	    chi2+= (params[i]-pars_prior[i])*(params[j]-pars_prior[j])*(*covarianceI)(i,j);
+    }
+  }
 
   return chi2;
 }

@@ -1,0 +1,1 @@
+rm chi2*.txt; for reg in 0.01 0.1 1 10 100 1000; do ./ccqefit.exe -r $reg > /dev/null; mv chi2.txt chi2_${reg}.txt; done; cat chi2*.txt > chi2_comb.txt;

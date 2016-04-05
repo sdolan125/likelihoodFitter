@@ -4,6 +4,9 @@ utils/src/regtestOut
 *~
 *.d
 *.nfs0*
+*.png
+*.ps
+./bin
 
 # Compiled Object files
 *.slo

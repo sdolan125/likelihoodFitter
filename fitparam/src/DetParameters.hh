@@ -26,8 +26,8 @@ class DetParameters : public AnaFitParameters
 {
 public:
   DetParameters(const char *fname, 
-		TVectorD* detweights,
-		 const char *name = "par_det");
+		            TVectorD* detweights, std::vector<AnaSample*> samples,
+		            const char *name = "par_det");
   ~DetParameters();
   
   void InitEventMap(std::vector<AnaSample*> &sample);
@@ -35,7 +35,7 @@ public:
 		    std::vector<double> &params);
   void ReWeight(AnaEvent *event, int nsample, int nevent,
 		std::vector<double> &params);
-  void SetBinning(const char *fname);
+  void SetBinning(const char *fname, std::vector<AnaSample*> &sample);
 
 private:
   int GetBinIndex(double p, double cth, int sample_id); //binning function

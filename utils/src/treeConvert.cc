@@ -30,36 +30,44 @@ Date Created: November 2015
 
 using namespace std;
 
-int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TString D1NameRec, TString D1NameTrue,
-                TString D2NameRec="", TString D2NameTrue="")
+bool extraCuts=true;
+
+int treeConvert(TString inFileName, TString inTreeName,  TString inTreeName_T, TString outFileName,
+                Float_t sigWeight, Int_t EvtStart, Int_t EvtEnd,
+                TString D1NameRec, TString D1NameTrue, TString D1NameTrue_T,
+                TString D2NameRec, TString D2NameTrue, TString D2NameTrue_T)
 {
   // You need to provide the number of branches in your HL2 tree
   // And the accum_level you want to cut each one at to get your selected events
   // i.e choosing n in accum_level[0][branch_i]>n
   const int nbranches = 10;
   //const int accumToCut[nbranches] = {5,6,7,7,6,4,3,5,7,6};
-  const int accumToCut[nbranches] =   {6,7,8,8,7,5,4,6,8,7};
+  const int accumToCut[nbranches] =   {7,8,9,8,7,5,4,7,8,7};
 
   TFile *infile = new TFile(inFileName);
   TTree *intree = (TTree*)infile->Get(inTreeName);
+  TTree *intree_T = (TTree*)infile->Get(inTreeName_T);
 
   TFile *outfile = new TFile(outFileName,"recreate");
   TTree *outtree = new TTree("selectedEvents", "selectedEvents");
+  TTree *outtree_T = new TTree("trueEvents", "trueEvents");
 
   // Declaration of leaf types
-  Int_t           accum_level[1500][50];
-  Int_t           reaction;
-  Int_t           cutBranch=-999;
-  Int_t           mectopology;
+  Int_t          accum_level[1500][50];
+  Int_t          reaction;
+  Int_t          cutBranch=-999;
+  Int_t          mectopology;
   Float_t        D1true;
   Float_t        D2true;
   Float_t        D1Reco;
   Float_t        D2Reco;
   Float_t        pMomRec;
+  Float_t        pMomRecRange;
   Float_t        pThetaRec;
   Float_t        pMomTrue;
   Float_t        pThetaTrue;
   Float_t        muMomRec;
+  Float_t        muMomRecRange;
   Float_t        muThetaRec;
   Float_t        muMomTrue;
   Float_t        muThetaTrue;
@@ -71,6 +79,18 @@ int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TSt
   Float_t        TrueNuEnergy=0;
   Float_t        weight;
 
+  Int_t          reaction_T;
+  Int_t          mectopology_T;
+  Float_t        D1true_T;
+  Float_t        D2true_T; 
+  Float_t        muMomTrue_T;
+  Float_t        pMomTrue_T;
+  Float_t        muCosThetaTrue_T;
+  Float_t        pCosThetaTrue_T;
+  Float_t        TrueNuEnergy_T;
+  Float_t        weight_T=1.0;
+
+
   intree->SetBranchAddress("accum_level", &accum_level);
   intree->SetBranchAddress("reaction", &reaction);
   intree->SetBranchAddress("mectopology", &mectopology);
@@ -79,13 +99,14 @@ int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TSt
   intree->SetBranchAddress(D1NameRec, &D1Reco);
   intree->SetBranchAddress(D2NameRec, &D2Reco);
   intree->SetBranchAddress("selp_mom", &pMomRec);
+  intree->SetBranchAddress("selp_mom_range_oarecon", &pMomRecRange);
   intree->SetBranchAddress("selp_theta" ,&pThetaRec);
-  intree->SetBranchAddress("selp_truemom" ,&pMomTrue);
-  intree->SetBranchAddress("selp_trueztheta" ,&pThetaTrue);
+  intree->SetBranchAddress("truep_truemom" ,&pMomTrue);
+  intree->SetBranchAddress("truep_truecostheta" ,&pCosThetaTrue);
   intree->SetBranchAddress("selmu_mom", &muMomRec);
+  intree->SetBranchAddress("selmu_mom_range_oarecon", &muMomRecRange);
   intree->SetBranchAddress("selmu_theta", &muThetaRec);
-  intree->SetBranchAddress("selmu_truemom", &muMomTrue);
-  //intree->SetBranchAddress("selmu_trueztheta", &muThetaTrue);
+  intree->SetBranchAddress("truemu_mom", &muMomTrue);
   intree->SetBranchAddress("truemu_costheta", &muCosThetaTrue);
   //intree->SetBranchAddress("nu_trueE", &RecoNuEnergy);
   intree->SetBranchAddress("nu_trueE", &TrueNuEnergy);
@@ -110,23 +131,55 @@ int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TSt
   outtree->Branch("Enutrue", &TrueNuEnergy, "Enutrue/F");
   outtree->Branch("weight", &weight, "weight/F");
 
+  intree_T->SetBranchAddress("reaction", &reaction_T);
+  intree_T->SetBranchAddress("mectopology", &mectopology_T);
+  intree_T->SetBranchAddress(D1NameTrue_T, &D1true_T);
+  intree_T->SetBranchAddress(D2NameTrue_T, &D2true_T);
+  intree_T->SetBranchAddress("truep_truemom" ,&pMomTrue_T);
+  intree_T->SetBranchAddress("truep_truecostheta" ,&pCosThetaTrue_T);
+  intree_T->SetBranchAddress("truemu_mom", &muMomTrue_T);
+  intree_T->SetBranchAddress("truemu_costheta", &muCosThetaTrue_T);
+  intree_T->SetBranchAddress("nu_trueE", &TrueNuEnergy_T);
+  //intree_T->SetBranchAddress("weight", &weight_T);
+
+  outtree_T->Branch("reaction", &reaction_T, "reaction/I");
+  outtree_T->Branch("mectopology", &mectopology_T, "mectopology/I");
+  outtree_T->Branch("D1True", &D1true_T, ("D1True/F"));
+  outtree_T->Branch("D2True", &D2true_T, ("D2True/F"));
+  outtree_T->Branch("muMomTrue", &muMomTrue_T, ("muMomTrue/F"));
+  outtree_T->Branch("muCosThetaTrue", &muCosThetaTrue_T, ("muCosThetaTrue/F"));
+  outtree_T->Branch("pMomTrue", &pMomTrue_T, ("pMomTrue/F"));
+  outtree_T->Branch("pCosThetaTrue", &pCosThetaTrue_T, ("pCosThetaTrue/F"));
+  outtree_T->Branch("Enutrue", &TrueNuEnergy_T, "Enutrue/F");
+  outtree_T->Branch("weight", &weight_T, "weight/F");
+
+
   Long64_t nentries = intree->GetEntriesFast();
   Long64_t nbytes = 0, nb = 0;
+  if(EvtEnd!=0) nentries=EvtEnd;
   int passCount=0;
-  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+  for (Long64_t jentry=EvtStart; jentry<nentries;jentry++) {
     nb = intree->GetEntry(jentry); nbytes += nb;
     passCount=0;
     RecoNuEnergy=TrueNuEnergy;
     pCosThetaRec   = TMath::Cos(pThetaRec);
-    pCosThetaTrue  = TMath::Cos(pThetaTrue);
     muCosThetaRec  = TMath::Cos(muThetaRec);
     //muCosThetaTrue = TMath::Cos(muThetaTrue);
     int branches_passed[10]={0};
     for(int i=0; i<nbranches; i++){
       if(accum_level[0][i]>accumToCut[i]){
         cutBranch=i; passCount++; 
+        if(cutBranch==2) pMomRec=pMomRecRange;
+        if(cutBranch==3) muMomRec=muMomRecRange;
         branches_passed[i]++;
-        outtree->Fill();
+        if((( (mectopology==1)||(mectopology==2) ) && ( (pMomTrue>450)&&(muMomTrue>250)&&(muCosThetaTrue>-0.6)&&(pCosThetaTrue>0.4) ))){
+          weight = weight*sigWeight;
+        }
+        if(extraCuts==false) outtree->Fill();
+        else if ((pMomRec>450)&&(muMomRec>250)&&(muCosThetaRec>-0.6)&&(pCosThetaRec>0.4)){
+          printf("INFO: Applying addional cuts as specified\n");
+          outtree->Fill();
+        }
       }
     }
     if(passCount>1){
@@ -138,7 +191,19 @@ int treeConvert(TString inFileName, TString inTreeName, TString outFileName, TSt
     }
   }
 
+
+
+  Long64_t nentries_T = intree_T->GetEntriesFast();
+  Long64_t nbytes_T = 0, nb_T = 0;
+  for (Long64_t jentry=0; jentry<nentries_T;jentry++) {
+    nb_T = intree_T->GetEntry(jentry); nbytes_T += nb_T;
+    outtree_T->Fill();
+  }
+  
+  printf("***Output Rec Tree: ***\n");
   outtree->Print();
+  printf("***Output True Tree: ***\n");
+  outtree_T->Print();
   outfile->Write();
 
   delete infile;
